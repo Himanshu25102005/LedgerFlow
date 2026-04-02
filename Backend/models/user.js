@@ -15,6 +15,7 @@ const userSchema = mongoose.Schema({
     type: String,
     enum: ["viewer", "analyst", "admin"],
     required: true,
+    default: "viewer"
   },
   createdAt:{
     type: Date,

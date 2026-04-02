@@ -1,7 +1,8 @@
-var express = require("express");
+const  express = require("express");
 const passport = require("passport");
 const User = require("../models/users");
-var router = express.Router();
+const  router = express.Router();
+import {checkRole} from ("../middlewares/rbac")
 require("./auth");
 
 
