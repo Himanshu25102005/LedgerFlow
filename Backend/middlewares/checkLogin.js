@@ -1,6 +1,13 @@
-const isloggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) return next();
-  else res.redirect("/login");
-};
+const isLoggedIn = (req, res, next) => {
+  const user = req.user;
 
-export default checkLogin
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (user.isActive !== true) {
+    return res.status(403).json({ message: "Account inactive" });
+  }
+
+  next();
+};

@@ -24,8 +24,9 @@ const userSchema = mongoose.Schema({
   totalIncome: Number,
   totalExpense: Number,  
   isActive:{
-    type: Boolean,
-    default: false,
+    type: String, 
+    enum: ["active", "inactive"],
+    default: "active"
   },
   transactions:[{
     type:mongoose.Schema.Types.ObjectId,
