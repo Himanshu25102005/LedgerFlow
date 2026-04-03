@@ -5,7 +5,7 @@ const isLoggedIn = (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (user.isActive !== true) {
+  if (user.status !== 'active') {
     return res.status(403).json({ message: "Account inactive" });
   }
 

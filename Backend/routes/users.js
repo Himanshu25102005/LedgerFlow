@@ -1,5 +1,5 @@
 import express from "express";
-import { checkRole } from "../middlewares/rbac";
+import { checkRole } from "../middlewares/checkRole";
 import { isloggedIn } from "../middlewares/checkLogin";
 const User = require("../models/users");
 var router = express.Router();
