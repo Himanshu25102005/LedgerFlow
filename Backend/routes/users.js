@@ -1,7 +1,7 @@
 import express from "express";
 import { checkRole } from "../middlewares/checkRole";
 import { isloggedIn } from "../middlewares/checkLogin";
-const User = require("../models/users");
+import User from "../models/user";
 var router = express.Router();
 
 /* GET users listing. */
@@ -115,7 +115,7 @@ router.patch(
 /* Toggle active/inActive status */
 router.patch(
   "/api/users/:id/status",
-  isLoggedIn,
+  isloggedIn,
   checkRole(["admin"]),
   async (req, res) => {
     try {
@@ -155,14 +155,22 @@ router.delete(
   checkRole(["admin"]),
   async (req, res) => {
     try {
-      const allowedRoles = ["admin", "analyst", "viewer"];
-      if (!allowedRoles.includes(role)) {
-        return res.status(400).json({ message: "Invalid role" });
+      const userIdToDelete = req.params.id;
+
+      const user = await User.findById(userIdToDelete);
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
       }
 
-      await User.deleteOne({
-        _id: req.params.id,
-      });
+      if (user._id.toString() === req.user._id.toString()) {
+        return res.status(400).json({
+          message: "You cannot delete yourself",
+        });
+      }
+      await User.deleteOne({ _id: userIdToDelete });
 
       return res.status(200).json({
         success: true,

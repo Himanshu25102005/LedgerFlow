@@ -1,7 +1,7 @@
 import express from "express";
 import { checkRole } from "../middlewares/checkRole";
 import { isloggedIn } from "../middlewares/checkLogin";
-import User from "../models/users";
+import User from "../models/user";
 import {
   getSummaryController,
   getSummaryByCategoryController,
@@ -9,7 +9,7 @@ import {
   getAdminController,
   getAdminByCategoryController,
   getAdminTrendsController,
-  getUserSummaryController
+  getUserSummaryController,
 } from "../controllers/dashboard.controller";
 var router = express.Router();
 
@@ -45,4 +45,12 @@ router.get(
   getAdminTrendsController,
 );
 
-router.get('/api/admin/user-summary', isloggedIn, checkRole(['admin', 'analyst']), getUserSummaryController )
+router.get(
+  "/api/admin/user-summary",
+  isloggedIn,
+  checkRole(["admin", "analyst"]),
+  getUserSummaryController,
+);
+
+
+export default router;

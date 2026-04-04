@@ -7,7 +7,7 @@ import {
   getRecordController,
   updateRecordController,
   softDeleteRecordController,
-  getRecordByIdController
+  getRecordByIdController,
 } from "../controllers/record.controller";
 var router = express.Router();
 
@@ -18,7 +18,8 @@ router.post("/api/records", isloggedIn, createRecordController);
 router.get(
   "/api/records",
   isloggedIn,
-  checkRole(["admin", "analyst"], getRecordController),
+  checkRole(["admin", "analyst"]),
+  getRecordController,
 );
 
 /* Update record */
@@ -36,7 +37,6 @@ router.delete(
   checkRole(["admin"]),
   softDeleteRecordController,
 );
-export default router;
 
 /* get sungle record */
 router.get(
@@ -45,3 +45,6 @@ router.get(
   checkRole(["admin", "analyst"]),
   getRecordByIdController,
 );
+
+
+export default router;

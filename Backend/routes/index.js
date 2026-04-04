@@ -1,10 +1,8 @@
-const  express = require("express");
+const express = require("express");
 const passport = require("passport");
-const User = require("../models/users");
-const  router = express.Router();
-import {checkRole} from ("../middlewares/rbac")
+import User from "../models/user";
+const router = express.Router();
 require("./auth");
-
 
 const isloggedIn = (req, res, next) => {
   if (req.isAuthenticated()) return next();
@@ -68,11 +66,13 @@ router.get(
 
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "http://localhost:3000/login" }),
+  passport.authenticate("google", {
+    failureRedirect: "http://localhost:3000/login",
+  }),
   async (req, res) => {
     await checkUser(req.user);
     console.log(req.user);
-    const user = req.user
+    const user = req.user;
     res.redirect("http://localhost:3000/");
   },
 );

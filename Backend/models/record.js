@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const recordSchema = mongoose.Schema({
   amount: Number,
-  Type: {
+  type: {
     type: String,
     enum: ["income", "expense"],
     required: true,

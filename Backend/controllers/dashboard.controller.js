@@ -45,7 +45,7 @@ export const getTrendsController = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const summary = await getTrendsService(userId, filter);
+    const summary = await getTrendsService(userId);
 
     return res.status(200).json({
       success: true,
@@ -58,9 +58,10 @@ export const getTrendsController = async (req, res) => {
   }
 };
 
+/* Admin Ones */
 export const getAdminController = async (req, res) => {
   try {
-    const data = getAdminService();
+    const data = await getAdminService();
 
     return res.status(200).json({
       success: true,
@@ -75,7 +76,7 @@ export const getAdminController = async (req, res) => {
 
 export const getAdminByCategoryController = async (req, res) => {
   try {
-    const data = getAdminByCategoryService();
+    const data = await getAdminByCategoryService();
 
     return res.status(200).json({
       success: true,

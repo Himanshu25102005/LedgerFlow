@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import plm from "passport-local-mongoose";
 const plm = require("passport-local-mongoose").default;
 
 const userSchema = mongoose.Schema({

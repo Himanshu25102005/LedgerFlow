@@ -3,7 +3,7 @@ import {
   getRecordService,
   updateRecordService,
   softDeleteRecordService,
-  getRecordByIdService
+  getRecordByIdService,
 } from "../services/record.service";
 
 export const createRecordController = async (req, res) => {
@@ -55,7 +55,7 @@ export const getRecordController = async (req, res) => {
 
 export const updateRecordController = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { recordId } = req.params;
 
     const { type, date, notes, category } = req.body;
 
@@ -110,10 +110,9 @@ export const getRecordByIdController = async (req, res) => {
     const record = await getRecordByIdService(id, userId);
 
     return res.status(200).json({
-        success: true, 
-        data: record
-    })
-
+      success: true,
+      data: record,
+    });
   } catch (e) {
     return res.status(500).json({
       error: e.message,

@@ -37,12 +37,12 @@ export const getRecordService = async ({
   if (type) filter.type = type;
   if (category) filter.category = category;
   if (date) filter.date = date;
-  if (userId) filter.userId = userId;
+  if (userId) filter.user = userId;
 
   const skip = (page - 1) * limit;
 
   const [records, totalRecords] = await Promise.all([
-    recordSchema.find(filter).skip(skip).limit(limit),
+    recordSchema.find({ filter, isDeleted: false }).skip(skip).limit(limit),
     recordSchema.countDocuments(filter),
   ]);
 
@@ -100,7 +100,7 @@ export const softDeleteRecordService = async ({ recordId, userId }) => {
   const deletedRecord = await recordSchema.findOneAndUpdate(
     {
       _id: recordId,
-      userId,
+      user: userId,
       isDeleted: false,
     },
     {
@@ -118,14 +118,14 @@ export const softDeleteRecordService = async ({ recordId, userId }) => {
   return deletedRecord;
 };
 
-export const getRecordByIdService = async ({ recordId, userId }) => {
+export const getRecordByIdService = async (recordId, userId) => {
   if (!recordId) {
     throw new Error("Record ID is required");
   }
 
   const record = await recordSchema.findOne({
     _id: recordId,
-    userId,
+    user: userId,
     isDeleted: false,
   });
 

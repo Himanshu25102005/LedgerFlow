@@ -10,4 +10,4 @@ const checkRole = (allowedRoles) => {
   };
 };
 
-export default rbac;
+export default checkRole;

@@ -5,7 +5,7 @@ export const getSummaryService = async (userId) => {
   const summary = await recordSchema.aggregate([
     {
       $match: {
-        user: userId,
+        userId: userId,
         isDeleted: false,
       },
     },
@@ -14,11 +14,13 @@ export const getSummaryService = async (userId) => {
         _id: null,
         totalIncome: {
           $sum: {
-            $cond: [{ $eq: ["$type", "income"] }, $amount, 0],
+            $cond: [{ $eq: ["$type", "income"] }, "$amount", 0],
           },
         },
         totalExpense: {
-          $sum: { $cond: [{ $eq: ["$type", "expense"] }, $amount, 0] },
+          $sum: {
+            $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0],
+          },
         },
       },
     },
@@ -100,7 +102,7 @@ export const getTrendsService = async (userId) => {
   const summary = await recordSchema.aggregate([
     {
       $match: {
-        userId: userId,
+        user: userId,
         isDeleted: false,
       },
     },
@@ -143,8 +145,10 @@ export const getTrendsService = async (userId) => {
   return summary;
 };
 
+/* Admin ones */
+
 export const getAdminService = async () => {
-  const data = recordSchema.aggregate([
+  const data = await recordSchema.aggregate([
     {
       $match: {
         isDeleted: false,
@@ -155,12 +159,12 @@ export const getAdminService = async () => {
         _id: null,
         totalIncome: {
           $sum: {
-            $cond: [{ $eq: ["$type", "income"] }, $amount, 0],
+            $cond: [{ $eq: ["$type", "income"] }, "$amount", 0],
           },
         },
         totalExpense: {
           $sum: {
-            $cond: [{ $eq: ["$type", "expense"] }, $amount, 0],
+            $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0],
           },
         },
       },
@@ -185,40 +189,64 @@ export const getAdminService = async () => {
 };
 
 export const getAdminByCategoryService = async () => {
-  const data = await recordSchema.aggregate([
+  const result = await recordSchema.aggregate([
     {
       $match: {
         isDeleted: false,
+        type: "expense",
       },
     },
+
     {
-      $group: {
-        _id: "$category",
-        total: {
-          $sum: {
-            $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0],
+      $facet: {
+        categories: [
+          {
+            $group: {
+              _id: "$category",
+              total: { $sum: "$amount" },
+            },
           },
-        },
+        ],
+
+        overall: [
+          {
+            $group: {
+              _id: null,
+              totalExpense: { $sum: "$amount" },
+            },
+          },
+        ],
       },
     },
+
+    {
+      $unwind: "$overall",
+    },
+
+    {
+      $unwind: "$categories",
+    },
+
     {
       $project: {
-        category: "$_id",
-      },
-    },
-    {
-      $addFields: {
+        _id: 0,
+        category: "$categories._id",
+        total: "$categories.total",
         percentage: {
-          $multiply: [{ $divide: ["$total", totalExpense] }, 100],
+          $multiply: [
+            { $divide: ["$categories.total", "$overall.totalExpense"] },
+            100,
+          ],
         },
       },
     },
+
     {
       $sort: { total: -1 },
     },
   ]);
 
-  return data;
+  return result;
 };
 
 export const getAdminTrendsService = async ({ page, limit }) => {
@@ -287,7 +315,7 @@ export const getAdminTrendsService = async ({ page, limit }) => {
   };
 };
 
-export const getUsersSummaryService = async ({ page, limit }) => {
+export const getUserSummaryService = async ({ page, limit }) => {
   const skip = (page - 1) * limit;
 
   const result = await recordSchema.aggregate([
@@ -314,7 +342,7 @@ export const getUsersSummaryService = async ({ page, limit }) => {
     },
     {
       $lookup: {
-        from: "users", 
+        from: "users",
         localField: "_id",
         foreignField: "_id",
         as: "user",
@@ -328,7 +356,7 @@ export const getUsersSummaryService = async ({ page, limit }) => {
     {
       $project: {
         _id: 0,
-        userId: "$_id",
+        user: "$_id",
         name: "$user.name",
         email: "$user.email",
         totalIncome: 1,

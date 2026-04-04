@@ -1,4 +1,4 @@
-const isLoggedIn = (req, res, next) => {
+export const isloggedIn = (req, res, next) => {
   const user = req.user;
 
   if (!req.isAuthenticated()) {
