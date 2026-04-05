@@ -25,15 +25,23 @@ LedgerFlow is a comprehensive full-stack project designed to streamline financia
 
 ## Tech Stack
 
-### Backend:
-- Node.js
-- Express.js
-- MongoDB + Mongoose
+### Backend ([Documentation](https://github.com/Himanshu25102005/LedgerFlow/blob/main/Backend/Backend_Doc.md)):
+- **Node.js & Express.js**: Core server-side runtime and framework.
+- **ES Modules (ESM)**: Modern JavaScript module system for cleaner syntax.
+- **MongoDB & Mongoose**: NoSQL database with schema-based modeling.
+- **Passport.js**: Authentication middleware supporting Local and Google OAuth 2.0 strategies.
+- **Express Session**: Session-based authentication management.
+- **CORS & Helmet**: Security middleware for cross-origin resource sharing and header protection.
+- **Dotenv**: Environment variable management for sensitive credentials.
 
-### Frontend:
-- Next.js
-- Tailwind CSS
-- Framer Motion
+### Frontend ([Documentation](https://github.com/Himanshu25102005/LedgerFlow/blob/main/Frontend/frontend.md)):
+- **Next.js 15 (App Router)**: React framework for production-grade web applications.
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+- **Framer Motion**: Library for high-performance production-ready animations.
+- **Axios**: Promise-based HTTP client for browser-to-server communication.
+- **Lucide React**: Clean and consistent icon library.
+- **Aceternity UI / Magic UI**: Modern UI components for high-end aesthetic design.
+- **React Hook Form**: Performant, flexible, and extensible forms with easy validation.
 
 ---
 
