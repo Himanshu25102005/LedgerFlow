@@ -13,7 +13,7 @@ LedgerFlow is a comprehensive full-stack project designed to streamline financia
 ## Features
 
 ### Core Features:
-- **Financial record management**: Complete CRUD (Create, Read, Update, Delete) operations for financial data.
+- **Financial record management**: Role-based financial record operations with controlled access, validation, and lifecycle management.
 - **Role-based access control**: Specialized roles including Admin, Analyst, and Viewer.
 - **Dashboard analytics**: Summaries, category breakdowns, and financial trend visualizations.
 - **Filtering and pagination**: Efficient data browsing and search capabilities.
