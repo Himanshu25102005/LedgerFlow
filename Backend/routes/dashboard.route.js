@@ -22,7 +22,12 @@ router.get("/trends", isloggedIn, getTrendsController);
 
 const adminRouter = express.Router();
 
-adminRouter.get("/summary", isloggedIn, checkRole(["admin"]), getAdminController);
+adminRouter.get(
+  "/summary",
+  isloggedIn,
+  checkRole(["admin"]),
+  getAdminController,
+);
 
 adminRouter.get(
   "/categories",
@@ -41,7 +46,7 @@ adminRouter.get(
 adminRouter.get(
   "/user-summary",
   isloggedIn,
-  checkRole(["admin", "analyst"]),
+  checkRole(["admin"]),
   getUserSummaryController,
 );
 

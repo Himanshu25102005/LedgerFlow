@@ -21,6 +21,7 @@ import recordRouter from "./routes/record.routes.js";
 import dashboardRouter, { adminRouter } from "./routes/dashboard.route.js";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
+import usersApiRouter from "./routes/users.api.route.js";
 
 const app = express();
 
@@ -30,7 +31,7 @@ connectDB();
 app.use(
   cors({
     origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   }),
 );
@@ -45,14 +46,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(
-  session({
-    secret: "Himanshu_the_best",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false },
-  }),
-);
+app.use(session({
+  secret: "Himanshu th  best",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Must be false for localhost (HTTP)
+    httpOnly: true,
+    sameSite: 'lax', // Required for cross-port redirects like Google OAuth
+    maxAge: 24 * 60 * 60 * 1000 
+  }
+}));
+
+passport.serializeUser(user.serializeUser());
+passport.deserializeUser(user.deserializeUser());
 
 app.use(passport.initialize());
 
@@ -60,12 +67,10 @@ app.use(passport.session());
 
 app.use("/api/records", recordRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/users", usersApiRouter);
 app.use("/api/admin", adminRouter);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-
-passport.serializeUser(user.serializeUser());
-passport.deserializeUser(user.deserializeUser());
 
 app.use(function (req, res, next) {
   next(createError(404));

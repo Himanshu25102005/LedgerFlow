@@ -518,7 +518,7 @@ export const SignInPage = ({
 
     try {
       const response = await axios.post(
-                "http://localhost:5000/login",
+                "/express/login",
                 form,
                 { withCredentials: true }
             );
@@ -613,7 +613,7 @@ export const SignInPage = ({
             {/* OAuth Buttons */}
             <div className="w-full  justify-center items-center py-2 px-4 flex gap-14 pt-8">
               <motion.a
-                href="http://localhost:5000/auth/google"
+                href="/express/auth/google"
                 whileHover={{ scale: 1.05 }}
                 transition={{
                   delay: 0.1,
@@ -729,11 +729,11 @@ export const SignInPage = ({
                 <div className="text-[#6E6E70]">
                   Don't have an account yet? {" "}
                   <motion.a
-                    href="http://localhost:3000/"
+                    href="http://localhost:3000/signup"
                     className="relative text-[#E4E4E4] cursor-pointer inline-block"
                     whileHover="hover"
                   >
-                    Log in
+                    Sign up
                     <motion.div
                       className="absolute bottom-0 left-0 h-[1px] bg-[#E4E4E4]"
                       initial={{ width: 0 }}

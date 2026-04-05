@@ -11,10 +11,8 @@ import {
 } from "../controllers/record.controller.js";
 var router = express.Router();
 
-/* Create transaction */
-router.post("/", isloggedIn, createRecordController);
+router.post("/", isloggedIn, checkRole(["admin", "viewer"]), createRecordController);
 
-/* Get records (scoped to user in controller) */
 router.get("/", isloggedIn, getRecordController);
 
 /* Update record */
@@ -25,7 +23,7 @@ router.patch(
   updateRecordController,
 );
 
-/* Soft Delete */
+/* Sooft Delete */
 router.delete(
   "/:id/delete",
   isloggedIn,

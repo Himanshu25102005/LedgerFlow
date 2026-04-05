@@ -1,13 +1,13 @@
 import User from "../models/user.js";
 import recordSchema from "../models/record.js";
+import { buildRecordMatch } from "../utils/recordFilters.js";
 
-export const getSummaryService = async (userId) => {
+export const getSummaryService = async (userId, { category, dateFilter }, isAdmin) => {
+  const match = buildRecordMatch({ userId, isAdmin, category, dateFilter });
+
   const summary = await recordSchema.aggregate([
     {
-      $match: {
-        user: userId,
-        isDeleted: false,
-      },
+      $match: match,
     },
     {
       $group: {
@@ -38,14 +38,20 @@ export const getSummaryService = async (userId) => {
   };
 };
 
-export const getSummaryByCategoryService = async (userId, income) => {
+export const getSummaryByCategoryService = async (
+  userId,
+  income,
+  { category, dateFilter },
+  isAdmin,
+) => {
+  const baseMatch = buildRecordMatch({ userId, isAdmin, category, dateFilter });
+
   if (income) {
     const incomeSummary = await recordSchema.aggregate([
       {
         $match: {
-          user: userId,
+          ...baseMatch,
           type: "income",
-          isDeleted: false,
         },
       },
       {
@@ -72,9 +78,8 @@ export const getSummaryByCategoryService = async (userId, income) => {
   const summary = await recordSchema.aggregate([
     {
       $match: {
-        user: userId,
+        ...baseMatch,
         type: "expense",
-        isDeleted: false,
       },
     },
     {
@@ -98,13 +103,15 @@ export const getSummaryByCategoryService = async (userId, income) => {
   return summary;
 };
 
-export const getTrendsService = async (userId) => {
+export const getTrendsService = async (userId, { category, dateFilter }, isAdmin) => {
+  const match = buildRecordMatch({ userId, isAdmin, category, dateFilter });
+  if (!dateFilter) {
+    match.date = { $exists: true, $ne: null };
+  }
+
   const summary = await recordSchema.aggregate([
     {
-      $match: {
-        user: userId,
-        isDeleted: false,
-      },
+      $match: match,
     },
     {
       $group: {
@@ -145,14 +152,19 @@ export const getTrendsService = async (userId) => {
   return summary;
 };
 
-/* Admin ones */
+/* Admin aggregate endpoints (optional filters on tsransactions) */
 
-export const getAdminService = async () => {
+export const getAdminService = async ({ category, dateFilter }) => {
+  const match = buildRecordMatch({
+    userId: null,
+    isAdmin: true,
+    category,
+    dateFilter,
+  });
+
   const data = await recordSchema.aggregate([
     {
-      $match: {
-        isDeleted: false,
-      },
+      $match: match,
     },
     {
       $group: {
@@ -188,11 +200,18 @@ export const getAdminService = async () => {
   };
 };
 
-export const getAdminByCategoryService = async () => {
+export const getAdminByCategoryService = async ({ category, dateFilter }) => {
+  const baseMatch = buildRecordMatch({
+    userId: null,
+    isAdmin: true,
+    category,
+    dateFilter,
+  });
+
   const result = await recordSchema.aggregate([
     {
       $match: {
-        isDeleted: false,
+        ...baseMatch,
         type: "expense",
       },
     },
@@ -220,7 +239,10 @@ export const getAdminByCategoryService = async () => {
     },
 
     {
-      $unwind: "$overall",
+      $unwind: {
+        path: "$overall",
+        preserveNullAndEmptyArrays: true,
+      },
     },
 
     {
@@ -230,12 +252,18 @@ export const getAdminByCategoryService = async () => {
     {
       $project: {
         _id: 0,
-        category: "$categories._id",
+        categoryName: "$categories._id",
         total: "$categories.total",
         percentage: {
-          $multiply: [
-            { $divide: ["$categories.total", "$overall.totalExpense"] },
-            100,
+          $cond: [
+            { $gt: ["$overall.totalExpense", 0] },
+            {
+              $multiply: [
+                { $divide: ["$categories.total", "$overall.totalExpense"] },
+                100,
+              ],
+            },
+            0,
           ],
         },
       },
@@ -249,15 +277,22 @@ export const getAdminByCategoryService = async () => {
   return result;
 };
 
-export const getAdminTrendsService = async ({ page, limit }) => {
+export const getAdminTrendsService = async ({ page, limit, category, dateFilter }) => {
   const skip = (page - 1) * limit;
+
+  const match = buildRecordMatch({
+    userId: null,
+    isAdmin: true,
+    category,
+    dateFilter,
+  });
+  if (!dateFilter) {
+    match.date = { $exists: true, $ne: null };
+  }
 
   const result = await recordSchema.aggregate([
     {
-      $match: {
-        isDeleted: false,
-        date: { $exists: true },
-      },
+      $match: match,
     },
 
     {
@@ -327,7 +362,7 @@ export const getUserSummaryService = async ({ page, limit }) => {
 
     {
       $group: {
-        _id: "$userId",
+        _id: "$user",
         totalIncome: {
           $sum: {
             $cond: [{ $eq: ["$type", "income"] }, "$amount", 0],

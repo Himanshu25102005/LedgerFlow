@@ -5,7 +5,7 @@ export const isloggedIn = (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (user.status !== 'active') {
+  if (user.status != null && user.status !== "active") {
     return res.status(403).json({ message: "Account inactive" });
   }
 

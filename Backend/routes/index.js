@@ -73,12 +73,32 @@ router.get(
   "/auth/google/callback",
   passport.authenticate("google", {
     failureRedirect: "http://localhost:3000/login",
+    session: false,
   }),
-  async (req, res) => {
-    await checkUser(req.user);
-    console.log(req.user);
-    const user = req.user;
-    res.redirect("http://localhost:3000/");
+  async (req, res, next) => {
+    try {
+      const googleUser = req.user;
+      if (!googleUser) {
+        return res.redirect("http://localhost:3000/login");
+      }
+      await checkUser(googleUser);
+      const freshUser = await User.findById(googleUser._id);
+      if (!freshUser) {
+        return res.redirect("http://localhost:3000/login");
+      }
+      req.session.regenerate((regenErr) => {
+        if (regenErr) return next(regenErr);
+        req.login(freshUser, (loginErr) => {
+          if (loginErr) return next(loginErr);
+          req.session.save((saveErr) => {
+            if (saveErr) return next(saveErr);
+            res.redirect("http://localhost:3000/dashboard");
+          });
+        });
+      });
+    } catch (e) {
+      next(e);
+    }
   },
 );
 

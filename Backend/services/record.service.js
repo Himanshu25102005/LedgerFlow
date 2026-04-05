@@ -1,4 +1,10 @@
 import recordSchema from "../models/record.js";
+import User from "../models/user.js";
+import {
+  buildDateRangeFilter,
+  normalizeCategory,
+  buildRecordMatch,
+} from "../utils/recordFilters.js";
 
 export const createRecordService = async ({
   amount,
@@ -27,6 +33,10 @@ export const createRecordService = async ({
 
   const record = await recordSchema.create(doc);
 
+  const currentUser = await User.findById(userId);
+  currentUser.transactions.push(record._id);
+  await currentUser.save();
+
   return record;
 };
 
@@ -34,24 +44,50 @@ export const getRecordService = async ({
   type,
   page,
   limit,
-  category,
+  category: categoryRaw,
   date,
+  range,
+  startDate,
+  endDate,
   userId,
+  isAdmin,
 }) => {
-  const filter = {};
+  const category = normalizeCategory(categoryRaw);
+  let dateFilter = buildDateRangeFilter(range, startDate, endDate);
+  if (!dateFilter && date && !range && !startDate && !endDate) {
+    const d = new Date(date);
+    if (!Number.isNaN(d.getTime())) {
+      const dayStart = new Date(d);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(d);
+      dayEnd.setHours(23, 59, 59, 999);
+      dateFilter = { $gte: dayStart, $lte: dayEnd };
+    }
+  }
 
+  const filter = buildRecordMatch({
+    userId,
+    isAdmin: Boolean(isAdmin),
+    category,
+    dateFilter,
+  });
   if (type) filter.type = type;
-  if (category) filter.category = category;
-  if (date) filter.date = date;
-  if (userId) filter.user = userId;
 
   const skip = (page - 1) * limit;
 
-  const query = { ...filter, isDeleted: false };
+  let listQuery = recordSchema
+    .find(filter)
+    .sort({ date: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  if (isAdmin) {
+    listQuery = listQuery.populate("user", "name email");
+  }
 
   const [records, totalRecords] = await Promise.all([
-    recordSchema.find(query).skip(skip).limit(limit),
-    recordSchema.countDocuments(query),
+    listQuery.lean(),
+    recordSchema.countDocuments(filter),
   ]);
 
   const totalPages = Math.ceil(totalRecords / limit);
@@ -88,7 +124,7 @@ export const updateRecordService = async ({ id, updatedData, userId }) => {
   }
 
   const updatedRecord = await recordSchema.findOneAndUpdate(
-    { _id: id, userId },
+    { _id: id, user: userId },
     { $set: sanitizedData },
     { new: true },
   );
@@ -100,17 +136,21 @@ export const updateRecordService = async ({ id, updatedData, userId }) => {
   return updatedRecord;
 };
 
-export const softDeleteRecordService = async ({ recordId, userId }) => {
+export const softDeleteRecordService = async ({ recordId, userId, isAdmin }) => {
   if (!recordId) {
     throw new Error("Record ID is required");
   }
 
+  const query = {
+    _id: recordId,
+    isDeleted: false,
+  };
+  if (!isAdmin) {
+    query.user = userId;
+  }
+
   const deletedRecord = await recordSchema.findOneAndUpdate(
-    {
-      _id: recordId,
-      user: userId,
-      isDeleted: false,
-    },
+    query,
     {
       $set: { isDeleted: true },
     },

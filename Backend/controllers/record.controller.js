@@ -32,15 +32,22 @@ export const createRecordController = async (req, res) => {
 
 export const getRecordController = async (req, res) => {
   try {
-    const { type, category, date, page, limit } = req.query;
+    const { type, category, date, page, limit, range, startDate, endDate } =
+      req.query;
+    const globalRecords =
+      req.user.role === "admin" || req.user.role === "analyst";
 
     const records = await getRecordService({
       type,
       category,
       date,
+      range,
+      startDate,
+      endDate,
       page: parseInt(page) || 1,
       limit: parseInt(limit) || 10,
       userId: req.user._id,
+      isAdmin: globalRecords,
     });
 
     return res.status(200).json({
@@ -68,7 +75,7 @@ export const updateRecordController = async (req, res) => {
     if (date) updatedData.date = date;
 
     const record = await updateRecordService({
-      id,
+      id: recordId,
       updatedData,
       userId: req.user._id,
     });
@@ -87,10 +94,12 @@ export const updateRecordController = async (req, res) => {
 export const softDeleteRecordController = async (req, res) => {
   try {
     const recordId = req.params.id;
+    const isAdmin = req.user.role === "admin";
 
     const record = await softDeleteRecordService({
       recordId,
       userId: req.user._id,
+      isAdmin,
     });
 
     return res.status(200).json({

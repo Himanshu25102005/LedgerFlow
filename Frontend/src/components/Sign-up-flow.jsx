@@ -515,7 +515,7 @@ export const SignInPage = ({
 
         try {
             const response = await axios.post(
-                "http://localhost:5000/signup",
+                "/express/signup",
                 form,
                 { withCredentials: true }
             );
@@ -603,7 +603,7 @@ export const SignInPage = ({
                         <div className="w-full  justify-center items-center py-2 px-4 flex gap-14 pt-8">
 
                             <motion.a
-                                href="http://localhost:5000/auth/google"
+                                href="/express/auth/google"
                                 whileHover={{ scale: 1.05 }}
                                 transition={{
                                     delay: 0.1,
