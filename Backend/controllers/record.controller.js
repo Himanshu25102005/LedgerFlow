@@ -4,7 +4,7 @@ import {
   updateRecordService,
   softDeleteRecordService,
   getRecordByIdService,
-} from "../services/record.service";
+} from "../services/record.service.js";
 
 export const createRecordController = async (req, res) => {
   try {

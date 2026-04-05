@@ -1,7 +1,7 @@
 import express from "express";
-import { checkRole } from "../middlewares/checkRole";
-import { isloggedIn } from "../middlewares/checkLogin";
-import User from "../models/user";
+import checkRole  from "../middlewares/checkRole.js";
+import { isloggedIn }  from "../middlewares/checkLogin.js";
+import User from "../models/user.js";
 var router = express.Router();
 
 /* GET users listing. */
@@ -183,4 +183,4 @@ router.delete(
   },
 );
 
-module.exports = router;
+export default router;

@@ -1,22 +1,30 @@
-require("dotenv").config();
-const connectDB = require("./config/db");
-const cors = require("cors");
-var createError = require("http-errors");
-var express = require("express");
-const session = require("express-session");
-const passport = require("passport");
-var path = require("path");
-const user = require("./models/user");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-var recordRouter = require("./routes/record.route");
-var dashboardRouter = require("./routes/dashboard.route");
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-var app = express();
-connectDB();
+import 'dotenv/config'; 
+import connectDB from "./config/db.js";
+import cors from "cors";
+import createError from "http-errors";
+import express from "express";
+import session from "express-session";
+import passport from "passport";
+import path from "path";
+import user from "./models/user.js";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+
+// Routes
+import recordRouter from "./routes/record.routes.js"; 
+import dashboardRouter from "./routes/dashboard.route.js";
+import indexRouter from "./routes/index.js";
+import usersRouter from "./routes/users.js";
+
+const app = express();
+
+// Call DB once
 connectDB();
 
 app.use(
@@ -71,4 +79,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+export default app;

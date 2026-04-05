@@ -1,5 +1,5 @@
-import User from "../models/user";
-import recordSchema from "../models/record";
+import User from "../models/user.js";
+import recordSchema from "../models/record.js";
 
 export const getSummaryService = async (userId) => {
   const summary = await recordSchema.aggregate([

@@ -1,8 +1,8 @@
-const express = require("express");
-const passport = require("passport");
-import User from "../models/user";
+import express from "express";
+import passport from "passport";
+import User from "../models/user.js";
 const router = express.Router();
-require("./auth");
+import "./auth.js";
 
 const isloggedIn = (req, res, next) => {
   if (req.isAuthenticated()) return next();
@@ -90,4 +90,4 @@ router.get("/getInfo", isloggedIn, (req, res, next) => {
   });
 });
 
-module.exports = router;
+export default router;

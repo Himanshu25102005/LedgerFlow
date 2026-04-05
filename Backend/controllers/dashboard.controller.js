@@ -6,7 +6,7 @@ import {
   getAdminByCategoryService,
   getAdminTrendsService,
   getUserSummaryService,
-} from "../services/dashboard.service";
+} from "../services/dashboard.service.js";
 
 export const getSummaryController = async (req, res) => {
   try {

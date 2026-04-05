@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const recordSchema = mongoose.Schema({
   amount: Number,
@@ -9,7 +9,7 @@ const recordSchema = mongoose.Schema({
   },
   date: {
     type: Date,
-    default: Date.now(),
+    default: Date.now, 
   },
   isDeleted: {
     type: Boolean,
@@ -23,4 +23,5 @@ const recordSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("recordSchema", recordSchema);
+
+export default mongoose.model("record", recordSchema);

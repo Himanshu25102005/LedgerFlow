@@ -1,6 +1,4 @@
-import User from "../models/user";
-import recordSchema from "../models/record";
-import { updateRecordController } from "../controllers/record.controller";
+import recordSchema from "../models/record.js";
 
 export const createRecordService = async ({
   amount,

@@ -1,37 +1,39 @@
 import mongoose from "mongoose";
-const plm = require("passport-local-mongoose").default;
+import passportLocalMongoose from "passport-local-mongoose";
 
 const userSchema = mongoose.Schema({
-  name: String, 
+  name: String,
   username: {
-    type:String, 
-    required: true, 
+    type: String,
+    required: true,
   },
-  password: String, 
   email: String,
   googleId: String,
   role: {
     type: String,
     enum: ["viewer", "analyst", "admin"],
     required: true,
-    default: "viewer"
+    default: "viewer",
   },
-  createdAt:{
+  createdAt: {
     type: Date,
-    default: Date.now()
+    default: Date.now, 
   },
   totalIncome: Number,
-  totalExpense: Number,  
-  status:{
-    type: String, 
+  totalExpense: Number,
+  status: {
+    type: String,
     enum: ["active", "inactive"],
-    default: "active"
+    default: "active",
   },
-  transactions:[{
-    type:mongoose.Schema.Types.ObjectId,
-    ref: "transaction"
-  }]
+  transactions: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "transaction",
+    },
+  ],
 });
 
-userSchema.plugin(plm);
-module.exports = mongoose.model("user", userSchema);
+userSchema.plugin(passportLocalMongoose.default || passportLocalMongoose);
+
+export default mongoose.model("user", userSchema);

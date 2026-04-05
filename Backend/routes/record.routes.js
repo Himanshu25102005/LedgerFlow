@@ -1,14 +1,14 @@
 import express from "express";
-import { checkRole } from "../middlewares/checkRole";
-import { isloggedIn } from "../middlewares/checkLogin";
-import User from "../models/users";
+import checkRole  from "../middlewares/checkRole.js";
+import { isloggedIn }  from "../middlewares/checkLogin.js";
+
 import {
   createRecordController,
   getRecordController,
   updateRecordController,
   softDeleteRecordController,
   getRecordByIdController,
-} from "../controllers/record.controller";
+} from "../controllers/record.controller.js";
 var router = express.Router();
 
 /* Create transaction */

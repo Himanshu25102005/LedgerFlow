@@ -1,7 +1,7 @@
 import express from "express";
-import { checkRole } from "../middlewares/checkRole";
-import { isloggedIn } from "../middlewares/checkLogin";
-import User from "../models/user";
+import checkRole  from "../middlewares/checkRole.js";
+import { isloggedIn }  from "../middlewares/checkLogin.js";
+
 import {
   getSummaryController,
   getSummaryByCategoryController,
@@ -10,7 +10,7 @@ import {
   getAdminByCategoryController,
   getAdminTrendsController,
   getUserSummaryController,
-} from "../controllers/dashboard.controller";
+} from "../controllers/dashboard.controller.js";
 var router = express.Router();
 
 router.get("/api/dashboard/summary", isloggedIn, getSummaryController);
