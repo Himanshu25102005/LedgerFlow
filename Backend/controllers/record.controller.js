@@ -8,13 +8,14 @@ import {
 
 export const createRecordController = async (req, res) => {
   try {
-    const { amount, type, notes, category } = req.body;
+    const { amount, type, notes, category, date } = req.body;
 
     const record = await createRecordService({
       amount,
       type,
       notes,
       category,
+      date,
       userId: req.user._id,
     });
 

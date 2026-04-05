@@ -5,7 +5,7 @@ export const getSummaryService = async (userId) => {
   const summary = await recordSchema.aggregate([
     {
       $match: {
-        userId: userId,
+        user: userId,
         isDeleted: false,
       },
     },

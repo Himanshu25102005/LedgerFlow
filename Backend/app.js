@@ -17,8 +17,8 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 // Routes
-import recordRouter from "./routes/record.routes.js"; 
-import dashboardRouter from "./routes/dashboard.route.js";
+import recordRouter from "./routes/record.routes.js";
+import dashboardRouter, { adminRouter } from "./routes/dashboard.route.js";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 
@@ -60,6 +60,7 @@ app.use(passport.session());
 
 app.use("/api/records", recordRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/admin", adminRouter);
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 

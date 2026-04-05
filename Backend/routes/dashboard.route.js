@@ -1,6 +1,6 @@
 import express from "express";
-import checkRole  from "../middlewares/checkRole.js";
-import { isloggedIn }  from "../middlewares/checkLogin.js";
+import checkRole from "../middlewares/checkRole.js";
+import { isloggedIn } from "../middlewares/checkLogin.js";
 
 import {
   getSummaryController,
@@ -11,46 +11,39 @@ import {
   getAdminTrendsController,
   getUserSummaryController,
 } from "../controllers/dashboard.controller.js";
-var router = express.Router();
 
-router.get("/api/dashboard/summary", isloggedIn, getSummaryController);
+const router = express.Router();
 
-router.get(
-  "/api/dashboard/categories",
-  isloggedIn,
-  getSummaryByCategoryController,
-);
+router.get("/summary", isloggedIn, getSummaryController);
 
-router.get("/api/dashboard/trends", isloggedIn, getTrendsController);
+router.get("/categories", isloggedIn, getSummaryByCategoryController);
 
-/* Admin Rouites */
-router.get(
-  "/api/admin/summary",
-  isloggedIn,
-  checkRole(["admin"]),
-  getAdminController,
-);
+router.get("/trends", isloggedIn, getTrendsController);
 
-router.get(
-  "/api/admin/categories",
+const adminRouter = express.Router();
+
+adminRouter.get("/summary", isloggedIn, checkRole(["admin"]), getAdminController);
+
+adminRouter.get(
+  "/categories",
   isloggedIn,
   checkRole(["admin", "analyst"]),
   getAdminByCategoryController,
 );
 
-router.get(
-  "/api/admin/trends",
+adminRouter.get(
+  "/trends",
   isloggedIn,
   checkRole(["admin", "analyst"]),
   getAdminTrendsController,
 );
 
-router.get(
-  "/api/admin/user-summary",
+adminRouter.get(
+  "/user-summary",
   isloggedIn,
   checkRole(["admin", "analyst"]),
   getUserSummaryController,
 );
 
-
+export { adminRouter };
 export default router;

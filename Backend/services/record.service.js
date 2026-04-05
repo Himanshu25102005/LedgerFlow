@@ -5,19 +5,27 @@ export const createRecordService = async ({
   type,
   notes,
   category,
+  date,
   userId,
 }) => {
-  if (!amount || !type || !notes || !category || !userId) {
+  if (amount == null || amount === "" || !type || !category || !userId) {
     throw new Error("Missing fields");
   }
 
-  const record = await recordSchema.create({
-    amount: amount,
-    type: type,
-    notes: notes,
-    category: category,
+  const doc = {
+    amount: Number(amount),
+    type,
+    notes: notes != null && String(notes).trim() !== "" ? String(notes) : "",
+    category: String(category).trim(),
     user: userId,
-  });
+  };
+
+  if (date) {
+    const d = new Date(date);
+    if (!Number.isNaN(d.getTime())) doc.date = d;
+  }
+
+  const record = await recordSchema.create(doc);
 
   return record;
 };
@@ -39,9 +47,11 @@ export const getRecordService = async ({
 
   const skip = (page - 1) * limit;
 
+  const query = { ...filter, isDeleted: false };
+
   const [records, totalRecords] = await Promise.all([
-    recordSchema.find({ filter, isDeleted: false }).skip(skip).limit(limit),
-    recordSchema.countDocuments(filter),
+    recordSchema.find(query).skip(skip).limit(limit),
+    recordSchema.countDocuments(query),
   ]);
 
   const totalPages = Math.ceil(totalRecords / limit);

@@ -9,6 +9,11 @@ const isloggedIn = (req, res, next) => {
   else res.redirect("/login");
 };
 
+const isloggedInJson = (req, res, next) => {
+  if (req.isAuthenticated()) return next();
+  res.status(401).json({ success: false, error: "Unauthorized" });
+};
+
 const checkUser = async (user) => {
   const baseSlug = user.username.replace(/\s+/g, "_").toLowerCase();
 
@@ -87,6 +92,19 @@ router.get("/logout", (req, res, next) => {
 router.get("/getInfo", isloggedIn, (req, res, next) => {
   res.json({
     user: req.user,
+  });
+});
+
+router.get("/auth/me", isloggedInJson, (req, res) => {
+  const u = req.user;
+  res.json({
+    success: true,
+    user: {
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      username: u.username,
+    },
   });
 });
 

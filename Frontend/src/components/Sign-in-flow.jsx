@@ -1,5 +1,8 @@
-"use client";;
-import React, { useState,useMemo, useRef, useEffect } from "react";
+"use client";
+import { useAnimation } from "framer-motion";
+import { useRouter } from 'next/navigation';
+import axios from 'axios'
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -37,7 +40,7 @@ export const CanvasRevealEffect = ({
       {showGradient && (
         // Adjust gradient colors if needed based on background (was bg-white, now likely uses containerClassName bg)
         // Example assuming a dark background like the SignInPage uses:
-         (<div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />)
+        (<div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />)
       )}
     </div>
   );
@@ -136,16 +139,14 @@ const DotMatrix = ({
 
         void main() {
             vec2 st = fragCoord.xy;
-            ${
-              center.includes("x")
-                ? "st.x -= abs(floor((mod(u_resolution.x, u_total_size) - u_dot_size) * 0.5));"
-                : ""
-            }
-            ${
-              center.includes("y")
-                ? "st.y -= abs(floor((mod(u_resolution.y, u_total_size) - u_dot_size) * 0.5));"
-                : ""
-            }
+            ${center.includes("x")
+          ? "st.x -= abs(floor((mod(u_resolution.x, u_total_size) - u_dot_size) * 0.5));"
+          : ""
+        }
+            ${center.includes("y")
+          ? "st.y -= abs(floor((mod(u_resolution.y, u_total_size) - u_dot_size) * 0.5));"
+          : ""
+        }
 
             float opacity = step(0.0, st.x);
             opacity *= step(0.0, st.y);
@@ -363,15 +364,15 @@ function MiniNavbar() {
 
   const logoElement = (
     <div className="relative w-5 h-5 flex items-center justify-center">
-    <span
-      className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
-    <span
-      className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span
-      className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-    <span
-      className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
- </div>
+      <span
+        className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+      <span
+        className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+      <span
+        className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
+      <span
+        className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+    </div>
   );
 
   const navLinksData = [
@@ -381,26 +382,26 @@ function MiniNavbar() {
   ];
 
   const loginButtonElement = (
-    <button
+    <a
+        href="http://localhost:3000/signup"
       className="px-4 py-2 sm:px-3 text-xs sm:text-sm border border-[#333] bg-[rgba(31,31,31,0.62)] text-gray-300 rounded-full hover:border-white/50 hover:text-white transition-colors duration-200 w-full sm:w-auto">
-      LogIn
-    </button>
+      Sign Up
+    </a>
   );
 
   const signupButtonElement = (
     <div className="relative group w-full sm:w-auto">
-       <div
-         className="absolute inset-0 -m-2 rounded-full
+      <div
+        className="absolute inset-0 -m-2 rounded-full
                        hidden sm:block
                        bg-gray-100
                        opacity-40 filter blur-lg pointer-events-none
                        transition-all duration-300 ease-out
                        group-hover:opacity-60 group-hover:blur-xl group-hover:-m-3"></div>
-       <a
-       href="http://localhost:3000/signup"
-         className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto">
-         Signup
-       </a>
+      <a
+        className="relative z-10 px-4 py-2 sm:px-3 text-xs sm:text-sm font-semibold text-black bg-gradient-to-br from-gray-100 to-gray-300 rounded-full hover:from-gray-200 hover:to-gray-400 transition-all duration-200 w-full sm:w-auto">
+        Log In
+      </a>
     </div>
   );
 
@@ -415,7 +416,7 @@ function MiniNavbar() {
                          transition-[border-radius] duration-0 ease-in-out`}>
       <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
         <div className="flex items-center">
-           {logoElement}
+          {logoElement}
         </div>
 
         <nav className="hidden sm:flex items-center space-x-4 sm:space-x-6 text-sm">
@@ -436,23 +437,23 @@ function MiniNavbar() {
           onClick={toggleMenu}
           aria-label={isOpen ? 'Close Menu' : 'Open Menu'}>
           {isOpen ? (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"><path
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"><path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M6 18L18 6M6 6l12 12"></path></svg>
           ) : (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"><path
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"><path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
@@ -493,67 +494,60 @@ export const SignInPage = ({
   const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
   const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
 
-  const handleEmailSubmit = (e) => {
+
+  const [form, setform] = useState({
+    username: "",
+    password: "",
+  });
+
+  const router = useRouter();
+
+  const controls = useAnimation(); // This defines 'controls'
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setform(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email) {
-      setStep("code");
-    }
-  };
 
-  // Focus first input when code screen appears
-  useEffect(() => {
-    if (step === "code") {
-      setTimeout(() => {
-        codeInputRefs.current[0]?.focus();
-      }, 500);
-    }
-  }, [step]);
+    try {
+      const response = await axios.post(
+                "http://localhost:5000/login",
+                form,
+                { withCredentials: true }
+            );
+            console.log(response);
 
-  const handleCodeChange = (index, value) => {
-    if (value.length <= 1) {
-      const newCode = [...code];
-      newCode[index] = value;
-      setCode(newCode);
-      
-      // Focus next input if value is entered
-      if (value && index < 5) {
-        codeInputRefs.current[index + 1]?.focus();
+
+      if (response.data) {
+        await controls.start({
+          x: [0, -10, 10, -10, 10, 0], // A little "shake" or "success" wiggle
+          transition: { duration: 0.5 }
+        });
+
+        // 2. Then redirect
+        router.push('/dashboard');
       }
-      
-      // Check if code is complete
-      if (index === 5 && value) {
-        const isComplete = newCode.every(digit => digit.length === 1);
-        if (isComplete) {
-          // First show the new reverse canvas
-          setReverseCanvasVisible(true);
-          
-          // Then hide the original canvas after a small delay
-          setTimeout(() => {
-            setInitialCanvasVisible(false);
-          }, 50);
-          
-          // Transition to success screen after animation
-          setTimeout(() => {
-            setStep("success");
-          }, 2000);
-        }
+      else {
+        // ERROR: Show a toast or error message
+        console.error("Login failed");
       }
+
+    } catch (e) {
+      console.log(e.message);
     }
   };
 
-  const handleKeyDown = (index, e) => {
-    if (e.key === "Backspace" && !code[index] && index > 0) {
-      codeInputRefs.current[index - 1]?.focus();
-    }
-  };
 
-  const handleBackClick = () => {
-    setStep("email");
-    setCode(["", "", "", "", "", ""]);
-    // Reset animations if going back
-    setReverseCanvasVisible(false);
-    setInitialCanvasVisible(true);
-  };
+
+
+
 
   return (
     <div
@@ -573,7 +567,7 @@ export const SignInPage = ({
               reverse={false} />
           </div>
         )}
-        
+
         {/* Reverse canvas (appears when code is complete) */}
         {reverseCanvasVisible && (
           <div className="absolute inset-0">
@@ -588,233 +582,172 @@ export const SignInPage = ({
               reverse={true} />
           </div>
         )}
-        
+
         <div
           className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(0,0,0,1)_0%,_transparent_100%)]" />
         <div
           className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-black to-transparent" />
       </div>
       {/* Content Layer */}
-      <div className="relative z-10 flex flex-col flex-1">
+      <div className="relative z-10 flex flex-col flex-1 justify-center items-center">
         {/* Top navigation */}
         <MiniNavbar />
 
         {/* Main content container */}
-        <div className="flex flex-1 flex-col lg:flex-row ">
-          {/* Left side (form) */}
-          <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="w-full mt-[150px] max-w-sm">
-              <AnimatePresence mode="wait">
-                {step === "email" ? (
-                  <motion.div
-                    key="email-step"
-                    initial={{ opacity: 0, x: -100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="space-y-6 text-center">
-                    <div className="space-y-1">
-                      <h1
-                        className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">Welcome Developer</h1>
-                      <p className="text-[1.8rem] text-white/70 font-light">Your sign in component</p>
-                    </div>
-                    
-                    
-                    <div className="space-y-4">
-                      <a
-                      href="http://localhost:5000/auth/google"
-                        className="backdrop-blur-[2px] w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full py-3 px-4 transition-colors">
-                        <span className="text-lg">G</span>
-                        <span>Sign in with Google</span>
-                      </a>
-                      
-                      <div className="flex items-center gap-4">
-                        <div className="h-px bg-white/10 flex-1" />
-                        <span className="text-white/40 text-sm">or</span>
-                        <div className="h-px bg-white/10 flex-1" />
-                      </div>
-                      
-                      <form onSubmit={handleEmailSubmit}>
-                        <div className="relative">
-                          <input
-                            type="email"
-                            placeholder="info@gmail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full backdrop-blur-[1px] text-white border-1 border-white/10 rounded-full py-3 px-4 focus:outline-none focus:border focus:border-white/30 text-center"
-                            required />
-                          <button
-                            type="submit"
-                            className="absolute right-1.5 top-1.5 text-white w-9 h-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors group overflow-hidden">
-                            <span className="relative w-full h-full block overflow-hidden">
-                              <span
-                                className="absolute inset-0 flex items-center justify-center transition-transform duration-300 group-hover:translate-x-full">
-                                →
-                              </span>
-                              <span
-                                className="absolute inset-0 flex items-center justify-center transition-transform duration-300 -translate-x-full group-hover:translate-x-0">
-                                →
-                              </span>
-                            </span>
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                    
-                    <p className="text-xs text-white/40 pt-10">
-                      By signing up, you agree to the <Link
-                      href="#"
-                      className="underline text-white/40 hover:text-white/60 transition-colors">MSA</Link>, <Link
-                      href="#"
-                      className="underline text-white/40 hover:text-white/60 transition-colors">Product Terms</Link>, <Link
-                      href="#"
-                      className="underline text-white/40 hover:text-white/60 transition-colors">Policies</Link>, <Link
-                      href="#"
-                      className="underline text-white/40 hover:text-white/60 transition-colors">Privacy Notice</Link>, and <Link
-                      href="#"
-                      className="underline text-white/40 hover:text-white/60 transition-colors">Cookie Notice</Link>.
-                    </p>
-                  </motion.div>
-                ) : step === "code" ? (
-                  <motion.div
-                    key="code-step"
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 100 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="space-y-6 text-center">
-                    <div className="space-y-1">
-                      <h1
-                        className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">We sent you a code</h1>
-                      <p className="text-[1.25rem] text-white/50 font-light">Please enter it</p>
-                    </div>
-                    
-                    <div className="w-full">
-                      <div
-                        className="relative rounded-full py-4 px-5 border border-white/10 bg-transparent">
-                        <div className="flex items-center justify-center">
-                          {code.map((digit, i) => (
-                            <div key={i} className="flex items-center">
-                              <div className="relative">
-                                <input
-                                  ref={(el) => {
-                                    codeInputRefs.current[i] = el;
-                                  }}
-                                  type="text"
-                                  inputMode="numeric"
-                                  pattern="[0-9]*"
-                                  maxLength={1}
-                                  value={digit}
-                                  onChange={e => handleCodeChange(i, e.target.value)}
-                                  onKeyDown={e => handleKeyDown(i, e)}
-                                  className="w-8 text-center text-xl bg-transparent text-white border-none focus:outline-none focus:ring-0 appearance-none"
-                                  style={{ caretColor: 'transparent' }} />
-                                {!digit && (
-                                  <div
-                                    className="absolute top-0 left-0 w-full h-full flex items-center justify-center pointer-events-none">
-                                    <span className="text-xl text-white">0</span>
-                                  </div>
-                                )}
-                              </div>
-                              {i < 5 && <span className="text-white/20 text-xl">|</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <motion.p
-                        className="text-white/50 hover:text-white/70 transition-colors cursor-pointer text-sm"
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.2 }}>
-                        Resend code
-                      </motion.p>
-                    </div>
-                    
-                    <div className="flex w-full gap-3">
-                      <motion.button
-                        onClick={handleBackClick}
-                        className="rounded-full bg-white text-black font-medium px-8 py-3 hover:bg-white/90 transition-colors w-[30%]"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ duration: 0.2 }}>
-                        Back
-                      </motion.button>
-                      <motion.button
-                        className={`flex-1 rounded-full font-medium py-3 border transition-all duration-300 ${
-                          code.every(d => d !== "") 
-                          ? "bg-white text-black border-transparent hover:bg-white/90 cursor-pointer" 
-                          : "bg-[#111] text-white/50 border-white/10 cursor-not-allowed"
-                        }`}
-                        disabled={!code.every(d => d !== "")}>
-                        Continue
-                      </motion.button>
-                    </div>
-                    
-                    <div className="pt-16">
-                      <p className="text-xs text-white/40">
-                        By signing up, you agree to the <Link
-                        href="#"
-                        className="underline text-white/40 hover:text-white/60 transition-colors">MSA</Link>, <Link
-                        href="#"
-                        className="underline text-white/40 hover:text-white/60 transition-colors">Product Terms</Link>, <Link
-                        href="#"
-                        className="underline text-white/40 hover:text-white/60 transition-colors">Policies</Link>, <Link
-                        href="#"
-                        className="underline text-white/40 hover:text-white/60 transition-colors">Privacy Notice</Link>, and <Link
-                        href="#"
-                        className="underline text-white/40 hover:text-white/60 transition-colors">Cookie Notice</Link>.
-                      </p>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="success-step"
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut", delay: 0.3 }}
-                    className="space-y-6 text-center">
-                    <div className="space-y-1">
-                      <h1
-                        className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">You're in!</h1>
-                      <p className="text-[1.25rem] text-white/50 font-light">Welcome</p>
-                    </div>
-                    
+        <motion.div
+          initial={{ opacity: 0.5, y: 100 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="border-none border-dashed border-white h-full w-1/2 flex justify-center items-center">
+          <div className=" h-200 w-200 ">
+            {/* Sign Up Account Div */}
+            <div className=" text-center flex flex-wrap gap-2">
+              <div className="text-[#FAFAFA] w-full font-bold text-3xl">Log in to your Account</div>
+              <div className="text-[#BCBCBC] text-md w-full ">Enter valid credentials to log in</div>
+            </div>
+
+            {/* OAuth Buttons */}
+            <div className="w-full  justify-center items-center py-2 px-4 flex gap-14 pt-8">
+              <motion.a
+                href="http://localhost:5000/auth/google"
+                whileHover={{ scale: 1.05 }}
+                transition={{
+                  delay: 0.1,
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
+                whileTap={{ scale: 1 }}
+                className="w-1/4 h-15 text-[#FDFDFD] rounded-xl border-2 border-[#1E1F1F] flex gap-2 justify-center items-center cursor-pointer  transition-colors">
+                {/* Add dimensions to this div or the SVG directly */}
+                <div className="flex items-center justify-center">
+                  <svg
+                    className="h-6 w-6" // This makes it visible!
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                  </svg>
+                </div>
+                <div className="font-medium">Google</div>
+              </motion.a>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                transition={{
+                  delay: 0.1,
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
+                whileTap={{ scale: 1 }}
+                className="w-1/4 h-15 text-[#FDFDFD] rounded-xl border-2 border-[#1E1F1F] flex gap-2 justify-center items-center cursor-pointer transition-colors">
+                <div className="flex items-center justify-center">
+                  <svg
+                    className="h-6 w-6" // This handles the scaling perfectly
+                    viewBox="0 0 16 16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                      fill="currentColor" // This makes it match your text color!
+                    />
+                  </svg>
+                </div>
+                <div className="font-medium">GitHub</div>
+              </motion.button>
+            </div>
+
+            {/* Or Line */}
+            <div className="flex items-center justify-center gap-4 w-full h-10">
+              <div className="h-[1px] w-1/4 bg-[#313131]"></div>
+              <span className="text-[#888888] text-sm">or</span>
+              <div className="h-[1px] w-1/4 bg-[#313131]"></div>
+            </div>
+            <form action="" onSubmit={handleSubmit}>
+              {/* Input Form */}
+
+              <motion.div animate={controls} className="text-white w-full">
+
+
+                <div className=" flex w-full px-35 py-5">
+                  <div className="flex flex-col flex-1 px-8">
+                    <label className="text-[#DFDFDF] font-bold mb-4">Username</label>
+                    <input
+                      className="bg-[#313131] p-3 w-full rounded-xl text-white"
+                      type="text"
+                      name="username"
+                      value={form.username}
+                      onChange={handleChange}
+                      placeholder="eg. ram_512GB"
+                    />
+                  </div>
+                </div>
+
+                <div className=" flex w-full px-35 py-5">
+                  <div className="flex flex-col flex-1 px-8">
+                    <label className="text-[#DFDFDF] font-bold mb-2">Password</label>
+                    <input
+                      className="bg-[#313131] p-3 w-full rounded-xl text-white"
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+                </div>
+
+                {/* <div className="text-[#DFDFDF] px-43 pt-2">
+                                    <div>Must be at least 8 characters long</div>
+                                </div> */}
+              </motion.div>
+
+              <div className="w-full mt-2 px-42 py-5 ">
+                <motion.button
+                  animate={controls}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{
+                    delay: 0.1,
+                    duration: 0.2,
+                    ease: "easeInOut"
+                  }}
+                  type="submit"
+                  whileTap={{ scale: 1 }}
+                  className="border-2 rounded-xl font-bold  text-[#565656] bg-[#FFFFFF] p-3 w-full border-white hover:text-[#000000] cursor-pointer">
+                  Sign Up
+                </motion.button>
+              </div>
+            </form>
+
+            <div className="text-center p-3">
+              <div className="text-center p-3">
+                <div className="text-[#6E6E70]">
+                  Don't have an account yet? {" "}
+                  <motion.a
+                    href="http://localhost:3000/"
+                    className="relative text-[#E4E4E4] cursor-pointer inline-block"
+                    whileHover="hover"
+                  >
+                    Log in
                     <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.5 }}
-                      className="py-10">
-                      <div
-                        className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-white to-white/70 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-8 w-8 text-black"
-                          viewBox="0 0 20 20"
-                          fill="currentColor">
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    </motion.div>
-                    
-                    <motion.button
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1 }}
-                      className="w-full rounded-full bg-white text-black font-medium py-3 hover:bg-white/90 transition-colors">
-                      Continue to Dashboard
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                      className="absolute bottom-0 left-0 h-[1px] bg-[#E4E4E4]"
+                      initial={{ width: 0 }}
+                      variants={{
+                        hover: { width: "100%" }
+                      }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+                  </motion.a>
+                </div>
+              </div>
             </div>
           </div>
-          
-        </div>
+        </motion.div >
       </div>
     </div>
   );

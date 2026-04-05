@@ -12,19 +12,14 @@ import {
 var router = express.Router();
 
 /* Create transaction */
-router.post("/api/records", isloggedIn, createRecordController);
+router.post("/", isloggedIn, createRecordController);
 
-/* Get records */
-router.get(
-  "/api/records",
-  isloggedIn,
-  checkRole(["admin", "analyst"]),
-  getRecordController,
-);
+/* Get records (scoped to user in controller) */
+router.get("/", isloggedIn, getRecordController);
 
 /* Update record */
 router.patch(
-  "/api/records/:recordId",
+  "/:recordId",
   isloggedIn,
   checkRole(["admin"]),
   updateRecordController,
@@ -32,15 +27,15 @@ router.patch(
 
 /* Soft Delete */
 router.delete(
-  "/api/records/:id/delete",
+  "/:id/delete",
   isloggedIn,
   checkRole(["admin"]),
   softDeleteRecordController,
 );
 
-/* get sungle record */
+/* get single record */
 router.get(
-  "/api/records/:id",
+  "/:id",
   isloggedIn,
   checkRole(["admin", "analyst"]),
   getRecordByIdController,
