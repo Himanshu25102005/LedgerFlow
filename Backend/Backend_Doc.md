@@ -72,9 +72,10 @@ Backend/
 │   ├── user.js            # User schema (Passport plugin, role, status, …)
 │   └── record.js          # Transaction / record schema (amount, type, category, user ref, soft delete)
 ├── routes/
-│   ├── index.js           # Root pages, signup/login, Google OAuth, getInfo
+│   ├── index.js           # Root pages, signup/login, Google OAuth, getInfo, auth/me
 │   ├── auth.js            # Passport Google strategy registration
-│   ├── users.js           # /api/me, user listing, role/status, delete
+│   ├── users.js           # /users/api/... legacy routes (me, user list, role, status)
+│   ├── users.api.route.js # /api/users/... exact route implementations for RBAC
 │   ├── record.routes.js   # /api/records CRUD + soft delete
 │   └── dashboard.route.js  # dashboard + admin analytics routes
 ├── middlewares/
@@ -215,7 +216,7 @@ Client ← JSON + HTTP status
 | Field | Type / Notes |
 |-------|----------------|
 | `amount` | Number |
-| `Type` or `type` | Enum `income` \| `expense` (see **implementation note**: schema and code should use **one consistent name**; aggregations reference `$type` in services) |
+| `type` | Enum `income` \| `expense` |
 | `date` | Date, default now |
 | `isDeleted` | Boolean, default `false` (**soft delete**) |
 | `notes` | String |
@@ -395,21 +396,32 @@ Unless noted, responses are JSON. **Session cookie** required for protected rout
 | GET | `/auth/google/callback` | OAuth callback | — | Redirect to SPA | Public |
 | GET | `/logout` | Destroy session | — | Redirect | Authenticated |
 | GET | `/getInfo` | Session user info | — | `{ user }` | Authenticated (HTML-oriented helper) |
+| GET | `/auth/me` | Current user details | — | `{ success, user: { name, email, role, username } }` | Authenticated (JSON API) |
 
 ---
 
-### 10.2 User Routes (`/users` mount + `/api/*` paths)
+### 10.2 User Routes (`/users` and `/api/users`)
 
-Exact mounting in `app.js` is `app.use("/users", usersRouter)` — full paths are **`/users/api/...`** unless routes are also mounted at root elsewhere. **Verify** `app.js` mounts for your deployment; document the **canonical** prefix your frontend uses.
+The Express app exposes user-related endpoints on two main router mounts: `app.use("/api/users", usersApiRouter)` and `app.use("/users", usersRouter)`. This results in parallel API structures that handle similar logic but with varying access controls and return payloads.
+
+**`/api/users` (from `users.api.route.js`)**
+
+| Method | Endpoint | Description | Body / Query | Response | Access |
+|--------|----------|-------------|--------------|----------|--------|
+| GET | `/api/users/` | Non-paginated user list | — | `{ success, data: [...] }` | **admin** |
+| PATCH | `/api/users/:id/status` | Set active/inactive | Body: `{ status }` | `{ success, data: updatedUser }` | **admin** |
+| PATCH | `/api/users/:id/role` | Change role | Body: `{ role }` | `{ success, data: updatedUser }` | **admin** |
+
+**`/users/api` (from `users.js`)**
 
 | Method | Endpoint | Description | Params / Body / Query | Response | Access |
 |--------|----------|-------------|------------------------|----------|--------|
-| GET | `/api/me` | Current user profile subset | — | `{ success, data: { name, username, email, role, totalIncome, totalExpense } }` | Logged in |
-| GET | `/api/user` | Paginated user list | `page`, `limit` | `{ success, count, totalPages, currentPage, users }` | Logged in |
-| GET | `/api/users/:id` | Single user by id | `id` | `{ success, data }` | Logged in |
-| PATCH | `/api/user/:id/role` | Change role | Body: `{ role }` enum | `{ success, user }` | **admin** |
-| PATCH | `/api/users/:id/status` | Set active/inactive | Body: `{ status }` | `{ success, user }` | **admin** |
-| DELETE | `/api/users/:id` | Delete user | `id` | `{ success }` | **admin** |
+| GET | `/users/api/me` | Detailed current user profile | — | `{ success, data: { name, username, email, role, totalIncome, totalExpense } }` | Logged in |
+| GET | `/users/api/user` | Paginated user list | `page`, `limit` | `{ success, count, totalPages, currentPage, users }` | Logged in |
+| GET | `/users/api/users/:id` | Single user by id | `id` | `{ success, data }` | Logged in |
+| PATCH | `/users/api/user/:id/role`| Change role | Body: `{ role }` enum | `{ success, user }` | **admin** |
+| PATCH | `/users/api/users/:id/status`| Set active/inactive | Body: `{ status }` | `{ success, user }` | **admin** |
+| DELETE | `/users/api/users/:id` | Delete user | `id` | `{ success }` | **admin** |
 
 ---
 
@@ -417,8 +429,8 @@ Exact mounting in `app.js` is `app.use("/users", usersRouter)` — full paths ar
 
 | Method | Endpoint | Description | Body / Query | Response | Access |
 |--------|----------|-------------|--------------|----------|--------|
-| POST | `/api/records` | Create record | `{ amount, type, notes, category }` | `201` `{ success, data }` | Logged in |
-| GET | `/api/records` | List + filter + pagination | `type`, `category`, `date`, `page`, `limit` | `200` `{ success, data, totalPages, totalRecords, currentPage, count }` | **admin**, **analyst** (per route config) |
+| POST | `/api/records` | Create record | `{ amount, type, notes, category }` | `201` `{ success, data }` | **admin**, **viewer** |
+| GET | `/api/records` | List + filter + pagination | `type`, `category`, `date`, `page`, `limit` | `200` `{ success, data, ... }` | Logged in |
 | PATCH | `/api/records/:recordId` | Partial update | Body: `type`, `date`, `notes`, `category`, `amount` | `200` `{ success, data }` | **admin** |
 | DELETE | `/api/records/:id/delete` | Soft delete | — | `200` `{ success, data }` | **admin** |
 | GET | `/api/records/:id` | Single record | `id` | `200` `{ success, data }` | **admin**, **analyst** |

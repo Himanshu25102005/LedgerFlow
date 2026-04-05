@@ -78,6 +78,7 @@ export const updateRecordController = async (req, res) => {
       id: recordId,
       updatedData,
       userId: req.user._id,
+      isAdmin: req.user.role === "admin",
     });
 
     return res.status(200).json({
@@ -117,7 +118,11 @@ export const getRecordByIdController = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user._id;
-    const record = await getRecordByIdService(id, userId);
+    const record = await getRecordByIdService(
+      id,
+      userId,
+      req.user.role === "admin",
+    );
 
     return res.status(200).json({
       success: true,

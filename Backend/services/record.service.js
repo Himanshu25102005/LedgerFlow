@@ -101,7 +101,7 @@ export const getRecordService = async ({
   };
 };
 
-export const updateRecordService = async ({ id, updatedData, userId }) => {
+export const updateRecordService = async ({ id, updatedData, userId, isAdmin }) => {
   if (!id) {
     throw new Error("Record ID is required");
   }
@@ -123,8 +123,13 @@ export const updateRecordService = async ({ id, updatedData, userId }) => {
     throw new Error("No valid fields to update");
   }
 
+  const query = { _id: id, isDeleted: false };
+  if (!isAdmin) {
+    query.user = userId;
+  }
+
   const updatedRecord = await recordSchema.findOneAndUpdate(
-    { _id: id, user: userId },
+    query,
     { $set: sanitizedData },
     { new: true },
   );
@@ -166,16 +171,20 @@ export const softDeleteRecordService = async ({ recordId, userId, isAdmin }) => 
   return deletedRecord;
 };
 
-export const getRecordByIdService = async (recordId, userId) => {
+export const getRecordByIdService = async (recordId, userId, isAdmin) => {
   if (!recordId) {
     throw new Error("Record ID is required");
   }
 
-  const record = await recordSchema.findOne({
-    _id: recordId,
-    user: userId,
-    isDeleted: false,
-  });
+  const query = { _id: recordId, isDeleted: false };
+  if (!isAdmin) {
+    query.user = userId;
+  }
+
+  const base = recordSchema.findOne(query);
+  const record = isAdmin
+    ? await base.populate("user", "name email")
+    : await base;
 
   if (!record) {
     throw new Error(
