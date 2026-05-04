@@ -19,6 +19,8 @@ export const CanvasRevealEffect = ({
   showGradient = true,
 
   // This controls the direction
+
+  
   reverse = false
 }) => {
   return (
